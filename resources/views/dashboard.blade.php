@@ -145,7 +145,7 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>Judul</th>
+                                                    <th>Judul Terbaru</th>
                                                     <th>Mahasiswa</th>
                                                     <th>Dosen</th>
                                                     <th>Status</th>
