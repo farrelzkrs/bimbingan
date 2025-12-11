@@ -55,10 +55,10 @@
                 </div>
                 <div>
                     <a class="navbar-brand brand-logo" href="{{ route('dashboard') }}">
-                        <img src="{{ asset('star-admin2-free-admin-template/assets/images/logo.svg') }}" alt="logo" />
+                        <img src="{{ asset('star-admin/images/logo.svg') }}" alt="logo" />
                     </a>
                     <a class="navbar-brand brand-logo-mini" href="{{ route('dashboard') }}">
-                        <img src="{{ asset('star-admin2-free-admin-template/assets/images/logo-mini.svg') }}" alt="logo" />
+                        <img src="{{ asset('star-admin/images/logo-mini.svg') }}" alt="logo" />
                     </a>
                 </div>
             </div>
@@ -82,11 +82,11 @@
                     <li class="nav-item dropdown d-none d-lg-block user-dropdown">
                         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <img class="img-xs rounded-circle" src="{{ asset('star-admin2-free-admin-template/assets/images/faces/face8.jpg') }}"
+                            <img class="img-xs rounded-circle" src="{{ asset('star-admin/images/faces/face8.jpg') }}"
                                 alt="Profile image"> </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                             <div class="dropdown-header text-center">
-                                <img class="img-md rounded-circle" src="{{ asset('star-admin2-free-admin-template/assets/images/faces/face8.jpg') }}"
+                                <img class="img-md rounded-circle" src="{{ asset('star-admin/images/faces/face8.jpg') }}"
                                     alt="Profile image">
                                 <p class="mb-1 mt-3 fw-semibold">{{ Auth::user()->name }}</p>
                                 <p class="fw-light text-muted mb-0">{{ Auth::user()->email }}</p>
@@ -316,18 +316,18 @@
     </div>
 
     <!-- plugins:js -->
-    <script src="{{ asset('star-admin2-free-admin-template/assets/vendors/js/vendor.bundle.base.js') }}"></script>
-    <script src="{{ asset('star-admin2-free-admin-template/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('star-admin/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('star-admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
     <!-- endinject -->
     <!-- inject:js -->
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/off-canvas.js') }}"></script>
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/template.js') }}"></script>
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/settings.js') }}"></script>
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/hoverable-collapse.js') }}"></script>
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/todolist.js') }}"></script>
+    <script src="{{ asset('star-admin/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('star-admin/js/template.js') }}"></script>
+    <script src="{{ asset('star-admin/js/settings.js') }}"></script>
+    <script src="{{ asset('star-admin/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ asset('star-admin/js/todolist.js') }}"></script>
     <!-- endinject -->
     <!-- Custom js for this page-->
-    <script src="{{ asset('star-admin2-free-admin-template/assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('star-admin/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <!-- End custom js for this page-->
 </body>
 
