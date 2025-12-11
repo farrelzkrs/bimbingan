@@ -1,131 +1,87 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Skripsi')
+@section('title', 'Edit Pengajuan Skripsi')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-  <div class="row mb-4">
-    <div class="col-md-8">
-      <h4 class="mb-0">Edit Skripsi</h4>
-    </div>
-    <div class="col-md-4 text-end">
-      <a href="{{ route('skripsi.index') }}" class="btn btn-secondary">
-        <i class="bx bx-arrow-back"></i> Kembali
-      </a>
-    </div>
-  </div>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Skripsi /</span> Perbarui Pengajuan</h4>
 
-  <div class="row">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Data Skripsi</h5>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <h5 class="card-header">Formulir Revisi / Pembaruan</h5>
+                
+                <div class="card-body">
+                    <form action="{{ route('skripsi.update', $skripsi->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label class="form-label">Judul Skripsi</label>
+                            <input type="text" class="form-control" name="judul" value="{{ old('judul', $skripsi->judul) }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi / Abstrak</label>
+                            <textarea class="form-control" name="deskripsi" rows="4" required>{{ old('deskripsi', $skripsi->deskripsi) }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dosen Pembimbing</label>
+                            @if(auth()->user()->role === 'user')
+                                {{-- Tampilan Mahasiswa: Hanya teks, tidak bisa diganti --}}
+                                <input type="text" class="form-control bg-light" value="{{ $skripsi->dosen->nama }}" readonly>
+                                <div class="form-text">Anda tidak dapat mengganti dosen pembimbing saat revisi.</div>
+                            @else
+                                {{-- Tampilan Admin: Dropdown bisa dipilih --}}
+                                <select class="form-select" name="dosen_id">
+                                    @foreach($dosens as $dosen)
+                                        <option value="{{ $dosen->id }}" {{ $skripsi->dosen_id == $dosen->id ? 'selected' : '' }}>
+                                            {{ $dosen->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Upload File Revisi (Opsional)</label>
+                            <input type="file" class="form-control" name="dokumen">
+                            <div class="form-text">
+                                Upload file baru jika ada revisi pada dokumen skripsi.
+                                @if($skripsi->dokumen)
+                                    <br>File saat ini: <a href="{{ asset('storage/' . $skripsi->dokumen) }}" target="_blank">Lihat Dokumen</a>
+                                @endif
+                            </div>
+                        </div>
+
+                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'dosen')
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="pending" {{ $skripsi->status == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                                    <option value="ongoing" {{ $skripsi->status == 'ongoing' ? 'selected' : '' }}>Sedang Berjalan</option>
+                                    <option value="completed" {{ $skripsi->status == 'completed' ? 'selected' : '' }}>Selesai</option>
+                                </select>
+                            </div>
+                        @else
+                            {{-- Info untuk mahasiswa bahwa status akan reset --}}
+                            <div class="alert alert-warning d-flex align-items-center mt-3" role="alert">
+                                <i class="bx bx-error me-2"></i>
+                                <div>
+                                    <strong>Perhatian:</strong> Menyimpan perubahan ini akan mengulang status pengajuan menjadi <strong>"Menunggu Validasi"</strong>.
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Simpan & Ajukan Ulang</button>
+                            <a href="{{ route('skripsi.index') }}" class="btn btn-secondary">Batal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-          @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <h6 class="mb-2">Terjadi Kesalahan:</h6>
-              <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          @endif
-
-          <form action="{{ route('skripsi.update', $skripsi) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-              <label for="mahasiswa_id" class="form-label">Mahasiswa <span class="text-danger">*</span></label>
-              <select name="mahasiswa_id" id="mahasiswa_id" class="form-control @error('mahasiswa_id') is-invalid @enderror" required>
-                <option value="">-- Pilih Mahasiswa --</option>
-                @foreach($mahasiswas as $mahasiswa)
-                  <option value="{{ $mahasiswa->id }}" @selected(old('mahasiswa_id', $skripsi->mahasiswa_id) == $mahasiswa->id)>
-                    {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
-                  </option>
-                @endforeach
-              </select>
-              @error('mahasiswa_id')
-                <span class="invalid-feedback">{{ $message }}</span>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="dosen_id" class="form-label">Dosen Pembimbing <span class="text-danger">*</span></label>
-              <select name="dosen_id" id="dosen_id" class="form-control @error('dosen_id') is-invalid @enderror" required>
-                <option value="">-- Pilih Dosen --</option>
-                @foreach($dosens as $dosen)
-                  <option value="{{ $dosen->id }}" @selected(old('dosen_id', $skripsi->dosen_id) == $dosen->id)>
-                    {{ $dosen->nama }} ({{ $dosen->spesialisasi }})
-                  </option>
-                @endforeach
-              </select>
-              @error('dosen_id')
-                <span class="invalid-feedback">{{ $message }}</span>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="judul" class="form-label">Judul Skripsi <span class="text-danger">*</span></label>
-              <input type="text" name="judul" id="judul" class="form-control @error('judul') is-invalid @enderror" 
-                value="{{ old('judul', $skripsi->judul) }}" placeholder="Masukkan judul skripsi" required>
-              @error('judul')
-                <span class="invalid-feedback">{{ $message }}</span>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
-              <textarea name="deskripsi" id="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" 
-                rows="4" placeholder="Masukkan deskripsi skripsi" required>{{ old('deskripsi', $skripsi->deskripsi) }}</textarea>
-              @error('deskripsi')
-                <span class="invalid-feedback">{{ $message }}</span>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-              <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
-                <option value="">-- Pilih Status --</option>
-                <option value="pending" @selected(old('status', $skripsi->status) == 'pending')>Menunggu Persetujuan</option>
-                <option value="ongoing" @selected(old('status', $skripsi->status) == 'ongoing')>Sedang Berjalan</option>
-                <option value="completed" @selected(old('status', $skripsi->status) == 'completed')>Selesai</option>
-              </select>
-              @error('status')
-                <span class="invalid-feedback">{{ $message }}</span>
-              @enderror
-            </div>
-
-            <div class="mt-4">
-              <button type="submit" class="btn btn-primary">
-                <i class="bx bx-save"></i> Perbarui Skripsi
-              </button>
-              <a href="{{ route('skripsi.index') }}" class="btn btn-outline-secondary ms-2">Batal</a>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
-
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Bantuan</h5>
-        </div>
-        <div class="card-body">
-          <p class="small text-muted mb-3"><strong>Status Skripsi:</strong></p>
-          <ul class="small text-muted list-unstyled">
-            <li>• <strong>Menunggu Persetujuan:</strong> Skripsi yang baru diajukan dan menunggu persetujuan pembimbing</li>
-            <li>• <strong>Sedang Berjalan:</strong> Skripsi yang sudah disetujui dan dalam proses pengerjaan</li>
-            <li>• <strong>Selesai:</strong> Skripsi yang telah selesai dikerjakan</li>
-          </ul>
-          <p class="small text-muted mt-3">Edit data skripsi dengan hati-hati untuk memastikan informasi tetap akurat.</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 @endsection

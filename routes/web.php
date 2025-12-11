@@ -15,6 +15,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// --- GRUP UNTUK SEMUA USER YANG LOGIN (Admin, Dosen, Mahasiswa) ---
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -23,19 +24,25 @@ Route::middleware('auth')->group(function () {
     // My projects route
     Route::get('/my-projects', [SkripsiController::class, 'myProjects'])->name('skripsi.my-projects');
 
-    // Profile routes untuk mahasiswa, dosen
+    // Profile routes
     Route::get('/mahasiswa/profile', [MahasiswaController::class, 'profile'])->name('mahasiswa.profile');
     Route::get('/dosen/profile', [DosenController::class, 'profile'])->name('dosen.profile');
+
+    Route::get('/skripsi/create', [SkripsiController::class, 'create'])->name('skripsi.create');
+    Route::post('/skripsi', [SkripsiController::class, 'store'])->name('skripsi.store');
+    Route::get('/skripsi/{skripsi}/edit', [SkripsiController::class, 'edit'])->name('skripsi.edit');
+    Route::put('/skripsi/{skripsi}', [SkripsiController::class, 'update'])->name('skripsi.update');
+    Route::delete('/skripsi/{skripsi}', [SkripsiController::class, 'destroy'])->name('skripsi.destroy');
+    Route::get('/skripsi', [SkripsiController::class, 'index'])->name('skripsi.index');
+    Route::get('/skripsi/{skripsi}', [SkripsiController::class, 'show'])->name('skripsi.show');
 });
 
-// Admin routes for CRUD
+// --- GRUP KHUSUS ADMIN ---
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('user', UserController::class);
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::resource('dosen', DosenController::class);
-    Route::resource('skripsi', SkripsiController::class);
+    
 });
 
 require __DIR__.'/auth.php';
-
-
