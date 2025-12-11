@@ -9,19 +9,19 @@
     <title>{{ config('app.name', 'Laravel') }} - Dashboard</title>
 
     <!-- plugins:css -->
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/feather/feather.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/ti-icons/css/themify-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/font-awesome/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/typicons/typicons.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/simple-line-icons/css/simple-line-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/css/vendor.bundle.base.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/feather/feather.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/typicons/typicons.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
     <!-- endinject -->
     <!-- inject:css -->
-    <link rel="stylesheet" href="{{ asset('star-admin2-free-admin-template/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('star-admin/css/style.css') }}">
     <!-- endinject -->
-    <link rel="shortcut icon" href="{{ asset('star-admin2-free-admin-template/assets/images/favicon.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('star-admin/images/favicon.png') }}" />
 </head>
 
 <body class="with-welcome-text">
