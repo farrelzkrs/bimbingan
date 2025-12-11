@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkripsiController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,11 +29,13 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin routes for CRUD
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('user', UserController::class);
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::resource('dosen', DosenController::class);
     Route::resource('skripsi', SkripsiController::class);
 });
 
 require __DIR__.'/auth.php';
+
 

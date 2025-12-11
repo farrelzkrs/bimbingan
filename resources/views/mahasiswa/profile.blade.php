@@ -7,10 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }} - Profil Mahasiswa</title>
 
-    <link rel="stylesheet" href="{{ asset('star-admin/vendors/feather/feather.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin/vendors/mdi/css/materialdesignicons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin/vendors/css/vendor.bundle.base.css') }}">
-    <link rel="stylesheet" href="{{ asset('star-admin/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('sneat-admin/vendors/feather/feather.css') }}">
+    <link rel="stylesheet" href="{{ asset('sneat-admin/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('sneat-admin/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('sneat-admin/css/style.css') }}">
 </head>
 
 <body class="with-welcome-text">
@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <a class="navbar-brand brand-logo" href="{{ route('dashboard') }}">
-                        <img src="{{ asset('star-admin/images/logo.svg') }}" alt="logo" />
+                        <img src="{{ asset('sneat-admin/images/logo.svg') }}" alt="logo" />
                     </a>
                 </div>
             </div>
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <script src="{{ asset('star-admin/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('sneat-admin/vendors/js/vendor.bundle.base.js') }}"></script>
 </body>
 
 </html>
