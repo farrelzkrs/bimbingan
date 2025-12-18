@@ -22,20 +22,12 @@
             </a>
         </li>
         @if (auth()->user()->role === 'admin')
+            {{-- Menu khusus Admin --}}
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Admin</span></li>
-            <li class="menu-item {{ request()->routeIs('user.*') ? 'active' : '' }}">
-                <a href="{{ route('user.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-id-card"></i>
-                    <div>Kelola User</div>
-                </a>
-            </li>
-            <x-nav-link :href="route('bimbingan.dosen.index')" :active="request()->routeIs('bimbingan.dosen.*')">
-                {{ __('Bimbingan (Dosen)') }}
-            </x-nav-link>
-            <li class="menu-item {{ request()->routeIs('skripsi.*') ? 'active' : '' }}">
-                <a href="{{ route('skripsi.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-book"></i>
-                    <div>Skripsi</div>
+            <li class="menu-item {{ request()->routeIs('bimbingan.dosen.*') ? 'active' : '' }}">
+                <a href="{{ route('bimbingan.dosen.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-chat"></i>
+                    <div>Bimbingan (Dosen)</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('mahasiswa.*') ? 'active' : '' }}">
@@ -50,7 +42,15 @@
                     <div>Dosen</div>
                 </a>
             </li>
-        @else
+            <li class="menu-item {{ request()->routeIs('skripsi.index') ? 'active' : '' }}">
+                <a href="{{ route('skripsi.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-book"></i>
+                    <div>Data Skripsi</div>
+                </a>
+            </li>
+        @endif
+        @if (auth()->user()->role === 'user')
+            {{-- Menu khusus Mahasiswa (role 'user') --}}
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Mahasiswa</span></li>
             <li class="menu-item {{ request()->routeIs('skripsi.my-projects') ? 'active' : '' }}">
                 <a href="{{ route('skripsi.my-projects') }}" class="menu-link">
@@ -58,9 +58,12 @@
                     <div>Skripsi Saya</div>
                 </a>
             </li>
-            <x-nav-link :href="route('bimbingan.mahasiswa')" :active="request()->routeIs('bimbingan.mahasiswa')">
-                {{ __('Hasil Bimbingan') }}
-            </x-nav-link>
+            <li class="menu-item {{ request()->routeIs('bimbingan.mahasiswa') ? 'active' : '' }}">
+                <a href="{{ route('bimbingan.mahasiswa') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-message-square-detail"></i>
+                    <div>Hasil Bimbingan</div>
+                </a>
+            </li>
         @endif
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Akun</span></li>
         <li class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">

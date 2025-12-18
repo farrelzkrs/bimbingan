@@ -54,7 +54,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('user', UserController::class);
     Route::resource('mahasiswa', MahasiswaController::class);
     Route::resource('dosen', DosenController::class);
-    
+    Route::get('/bimbingan-dosen', [BimbinganController::class, 'indexDosen'])->name('bimbingan.dosen.index');
 });
 // Di dalam routes/web.php
 Route::middleware(['auth', 'role:user'])->group(function () {
