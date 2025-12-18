@@ -63,23 +63,19 @@ class SkripsiController extends Controller
 
     public function show(Skripsi $skripsi)
     {
-        // Pastikan view-nya juga sudah dibuat nanti
         return view('skripsi.show', compact('skripsi'));
     }
 
     public function update(Request $request, Skripsi $skripsi)
     {
-        // Ambil user yang sedang login
         $user = Auth::user();
 
-        // ATURAN VALIDASI DASAR
         $rules = [
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'dokumen' => 'nullable|file|mimes:pdf,docx,doc|max:5120',
         ];
 
-        // LOGIKA KHUSUS BERDASARKAN ROLE
         if ($user->role === 'user') {
             // --- MAHASISWA ---
             $validated = $request->validate($rules);
@@ -89,16 +85,26 @@ class SkripsiController extends Controller
 
             $validated['status'] = 'pending';
 
+            $message = 'Pengajuan skripsi berhasil diperbarui dan status kembali menjadi Menunggu.';
         } else {
             // --- ADMIN / DOSEN ---
-            // Admin boleh ubah semuanya termasuk dosen dan status
-            $rules['mahasiswa_id'] = 'required|exists:mahasiswas,id|unique:skripsis,mahasiswa_id,' . $skripsi->id;
             $rules['dosen_id'] = 'required|exists:dosens,id';
             $rules['status'] = 'required|in:pending,ongoing,completed';
-            
+
+            if ($request->has('mahasiswa_id')) {
+                $rules['mahasiswa_id'] = 'required|exists:mahasiswas,id|unique:skripsis,mahasiswa_id,' . $skripsi->id;
+            }
+
             $validated = $request->validate($rules);
+
+            if (!isset($validated['mahasiswa_id'])) {
+                $validated['mahasiswa_id'] = $skripsi->mahasiswa_id;
+            }
+
+            $message = 'Data skripsi berhasil diperbarui.';
         }
 
+        // UPLOAD DOKUMEN BARU (Jika ada)
         if ($request->hasFile('dokumen')) {
             // Hapus file lama jika ada
             if ($skripsi->dokumen) {
@@ -107,9 +113,10 @@ class SkripsiController extends Controller
             $validated['dokumen'] = $request->file('dokumen')->store('skripsi', 'public');
         }
 
+        // Lakukan Update
         $skripsi->update($validated);
 
-        return redirect()->route('skripsi.index')->with('success', 'Pengajuan skripsi berhasil diperbarui dan status kembali menjadi Menunggu.');
+        return redirect()->route('skripsi.index')->with('success', $message);
     }
 
     public function destroy(Skripsi $skripsi)

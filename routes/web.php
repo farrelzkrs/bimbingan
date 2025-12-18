@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BimbinganController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkripsiController;
 use App\Http\Controllers\DosenController;
@@ -35,6 +36,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/skripsi/{skripsi}', [SkripsiController::class, 'destroy'])->name('skripsi.destroy');
     Route::get('/skripsi', [SkripsiController::class, 'index'])->name('skripsi.index');
     Route::get('/skripsi/{skripsi}', [SkripsiController::class, 'show'])->name('skripsi.show');
+});
+
+Route::get('/hasil-bimbingan', [BimbinganController::class, 'indexMahasiswa'])
+    ->middleware('role:user')
+    ->name('bimbingan.mahasiswa');
+
+// Untuk Dosen (Manajemen Bimbingan)
+Route::middleware('role:admin')->group(function () {
+    Route::get('/bimbingan-dosen', [BimbinganController::class, 'indexDosen'])->name('bimbingan.dosen.index');
+    Route::get('/bimbingan-dosen/{skripsi}', [BimbinganController::class, 'showDosen'])->name('bimbingan.dosen.show');
+    Route::post('/bimbingan-dosen/{skripsi}', [BimbinganController::class, 'store'])->name('bimbingan.dosen.store');
 });
 
 // --- GRUP KHUSUS ADMIN ---
