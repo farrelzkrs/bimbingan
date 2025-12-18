@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('bimbingans', function (Blueprint $table) {
             $table->id();
+            // Foreign key to skripsis table
+            $table->foreignId('skripsi_id')->constrained('skripsis')->onDelete('cascade');
+            // Foreign key to dosens table
+            $table->foreignId('dosen_id')->constrained('dosens')->onDelete('cascade');
+            
+            $table->text('catatan')->nullable();
+            $table->string('file_surat')->nullable();
+            $table->string('status')->default('pending'); // Adjust default as needed
+            
             $table->timestamps();
         });
     }

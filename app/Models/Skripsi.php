@@ -20,6 +20,11 @@ class Skripsi extends Model
         'status',
     ];
 
+    public function bimbingans()
+    {
+        return $this->hasMany(Bimbingan::class);
+    }
+
     public function mahasiswa()
     {
         return $this->belongsTo(Mahasiswa::class);

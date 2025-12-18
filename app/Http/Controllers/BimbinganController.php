@@ -85,20 +85,46 @@ class BimbinganController extends Controller
     public function indexMahasiswa()
     {
         $user = Auth::user();
-
-        // Cek apakah mahasiswa punya skripsi
-        if (!$user->mahasiswa || !$user->mahasiswa->skripsi) {
-            return redirect()->route('dashboard')->with('error', 'Anda belum mengajukan skripsi.');
-        }
-
         $skripsi = $user->mahasiswa->skripsi;
 
-        // Ambil riwayat bimbingan
         $bimbingans = Bimbingan::where('skripsi_id', $skripsi->id)
             ->with('dosen')
-            ->orderBy('created_at', 'desc')
             ->get();
+
 
         return view('bimbingan.mahasiswa.index', compact('bimbingans', 'skripsi'));
     }
+
+public function storeMahasiswa(Request $request)
+{
+    $user = Auth::user();
+    
+    // Pastikan user adalah mahasiswa yang punya skripsi
+    if (!$user->mahasiswa || !$user->mahasiswa->skripsi) {
+        return back()->with('error', 'Anda belum memiliki data skripsi.');
+    }
+
+    $skripsi = $user->mahasiswa->skripsi;
+
+    $request->validate([
+        'catatan' => 'required|string',
+        'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // Max 10MB
+    ]);
+
+    $path = null;
+    if ($request->hasFile('file_surat')) {
+        $path = $request->file('file_surat')->store('bimbingan_files', 'public');
+    }
+
+    // Buat data bimbingan baru dengan status 'pending' (menunggu feedback dosen)
+    Bimbingan::create([
+        'skripsi_id' => $skripsi->id,
+        'dosen_id' => $skripsi->dosen_id,
+        'catatan' => $request->catatan,
+        'file_surat' => $path,
+        'status' => 'pending', 
+    ]);
+
+    return back()->with('success', 'Progress bimbingan berhasil dikirim ke dosen.');
+}
 }

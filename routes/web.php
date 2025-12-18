@@ -56,5 +56,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('dosen', DosenController::class);
     
 });
+// Di dalam routes/web.php
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/hasil-bimbingan', [BimbinganController::class, 'indexMahasiswa'])->name('bimbingan.mahasiswa');
+    Route::post('/hasil-bimbingan', [BimbinganController::class, 'storeMahasiswa'])->name('bimbingan.mahasiswa.store');
+});
 
 require __DIR__.'/auth.php';
