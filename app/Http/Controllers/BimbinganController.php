@@ -12,25 +12,29 @@ class BimbinganController extends Controller
 {
     // --- HALAMAN DOSEN ---
 
-    // Menampilkan daftar mahasiswa bimbingan dosen tersebut
+    // Menampilkan daftar mahasiswa bimbingan dosen
     public function indexDosen()
     {
         $user = Auth::user();
 
-        // Pastikan user adalah admin/dosen
+        // Pastikan user adalah dosen
         if (!$user->dosen) {
             abort(403, 'Akses ditolak. Anda bukan Dosen.');
         }
 
-        // Ambil skripsi yang dosen_id nya sama dengan dosen yang login
+        // AMBIL SKRIPSI YANG BELUM DI-ACC
+        // Logika: Ambil skripsi milik dosen ini, TAPI yang belum punya bimbingan statusnya 'done'
         $skripsis = Skripsi::with('mahasiswa')
             ->where('dosen_id', $user->dosen->id)
+            ->whereDoesntHave('bimbingans', function ($query) {
+                $query->where('status', 'done');
+            })
             ->get();
 
         return view('bimbingan.dosen.index', compact('skripsis'));
     }
 
-    // Menampilkan detail bimbingan & form tambah notulen
+    // Menampilkan detail bimbingan & form revisi untuk Dosen
     public function showDosen(Skripsi $skripsi)
     {
         $user = Auth::user();
@@ -40,7 +44,7 @@ class BimbinganController extends Controller
             abort(403);
         }
 
-        // Ambil riwayat bimbingan
+        // Ambil riwayat bimbingan untuk ditampilkan sebagai history
         $riwayat_bimbingan = Bimbingan::where('skripsi_id', $skripsi->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -48,7 +52,7 @@ class BimbinganController extends Controller
         return view('bimbingan.dosen.show', compact('skripsi', 'riwayat_bimbingan'));
     }
 
-    // Menyimpan notulen/revisi dari Dosen
+    // Menyimpan notulen/revisi atau ACC dari Dosen
     public function store(Request $request, Skripsi $skripsi)
     {
         $user = Auth::user();
@@ -56,12 +60,12 @@ class BimbinganController extends Controller
         $request->validate([
             'catatan' => 'nullable|string',
             'file_surat' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:5120',
-            'status' => 'required|in:revisi,done',
+            'status' => 'required|in:revisi,done', // 'done' artinya ACC
         ]);
 
-        // Validasi minimal ada catatan atau file
-        if (!$request->catatan && !$request->hasFile('file_surat')) {
-            return back()->withErrors(['catatan' => 'Harap isi catatan atau upload file.']);
+        // Validasi input
+        if (!$request->catatan && !$request->hasFile('file_surat') && $request->status == 'revisi') {
+            return back()->withErrors(['catatan' => 'Harap isi catatan atau upload file jika memberikan revisi.']);
         }
 
         $path = null;
@@ -69,6 +73,7 @@ class BimbinganController extends Controller
             $path = $request->file('file_surat')->store('bimbingan_files', 'public');
         }
 
+        // Simpan data bimbingan
         Bimbingan::create([
             'skripsi_id' => $skripsi->id,
             'dosen_id' => $user->dosen->id,
@@ -77,7 +82,12 @@ class BimbinganController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Bimbingan berhasil dikirim ke mahasiswa.');
+        // Jika status Done (ACC), kembalikan ke index karena mahasiswa akan hilang dari list
+        if ($request->status == 'done') {
+            return redirect()->route('bimbingan.dosen.index')->with('success', 'Skripsi telah di-ACC. Mahasiswa dihapus dari daftar bimbingan aktif.');
+        }
+
+        return back()->with('success', 'Revisi berhasil dikirim ke mahasiswa.');
     }
 
     // --- HALAMAN MAHASISWA ---
@@ -97,24 +107,30 @@ class BimbinganController extends Controller
         }
 
         $skripsi = $mahasiswa->skripsi;
-        $bimbingans = Bimbingan::where('skripsi_id', $skripsi->id)->with('dosen')->get();
+
+        // Ambil semua history revisi dari dosen
+        $bimbingans = Bimbingan::where('skripsi_id', $skripsi->id)
+            ->with('dosen')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('bimbingan.mahasiswa.index', compact('bimbingans', 'skripsi'));
     }
-
+    
+    // Opsional: Jika mahasiswa masih butuh upload file balasan, pakai ini.
+    // Jika hanya "melihat list revisian" sesuai request, fungsi ini tidak wajib dipanggil di view.
     public function storeMahasiswa(Request $request)
     {
         $user = Auth::user();
-
-        // Pastikan user adalah mahasiswa yang punya skripsi
         if (!$user->mahasiswa || !$user->mahasiswa->skripsi) {
-            return back()->with('error', 'Anda belum memiliki data skripsi.');
+             return back()->with('error', 'Data tidak ditemukan');
         }
-
+        
         $skripsi = $user->mahasiswa->skripsi;
 
         $request->validate([
             'catatan' => 'required|string',
-            'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // Max 10MB
+            'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
         $path = null;
@@ -122,15 +138,14 @@ class BimbinganController extends Controller
             $path = $request->file('file_surat')->store('bimbingan_files', 'public');
         }
 
-        // Buat data bimbingan baru dengan status 'pending' (menunggu feedback dosen)
         Bimbingan::create([
             'skripsi_id' => $skripsi->id,
             'dosen_id' => $skripsi->dosen_id,
             'catatan' => $request->catatan,
             'file_surat' => $path,
-            'status' => 'pending',
+            'status' => 'pending', // Pending menunggu revisi dosen
         ]);
 
-        return back()->with('success', 'Progress bimbingan berhasil dikirim ke dosen.');
+        return back()->with('success', 'Dokumen/Catatan terkirim ke dosen.');
     }
 }
